@@ -1,7 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const OfflinePlugin = require('offline-plugin');
 
 const __DEV__ = process.env.NODE_ENV !== 'production';
 
@@ -96,30 +95,6 @@ module.exports = {
       },
     }),
     new webpack.NamedModulesPlugin(),
-    // Always expose NODE_ENV to webpack, in order to use `process.env.NODE_ENV`
-    //
-    new OfflinePlugin({
-      publicPath: '/',
-      caches: {
-        main: [
-          'vendor.*.js',
-          '*.js',
-          '**.*.js',
-          '*.png',
-          '*.otf'
-        ]
-      },
-      responseStrategy: 'cache-first',
-      ServiceWorker: {
-        navigateFallbackURL: '/',
-        cacheName: 'syam-pillai-main' // do not change this. It will leave the old cache in browser for ever
-      },
-      AppCache: {
-        FALLBACK: {
-          '/': '/offline-page.html'
-        }
-      }
-    })
 
   ],
 
