@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 import PubNubReact from 'pubnub-react';
 
 import { Heading, SubHeading, Board } from 'components'
+import { XoConstants } from 'helpers'
 
 const propTypes = {}
 const defaultProps = {}
@@ -33,7 +34,8 @@ class BoardContainer extends Component {
     this.playerX = 0;
     // sum value of player O
     this.playerO = 0;
-    this.pubnub = new PubNubReact({ publishKey: 'pub-c-7e22a6d7-89cf-4fdb-9af8-4c331b5922c0', subscribeKey: 'sub-c-86637cb6-c9f2-11e8-9ca5-92bdce849b25' });
+    // create new pubNub interface and initialize it
+    this.pubnub = new PubNubReact({ publishKey: XoConstants.pubNubPublishKey, subscribeKey: XoConstants.pubNubSubscribeKey });
     this.pubnub.init(this);
   }
 
@@ -79,6 +81,7 @@ class BoardContainer extends Component {
         isReset: isReset
       }
     }
+    // publish a new pubnub action
     this.pubnub.publish(action, (response) => {
       console.log("response", response);
     });
