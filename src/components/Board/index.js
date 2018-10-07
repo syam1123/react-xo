@@ -4,7 +4,13 @@ import styled, { css } from 'styled-components'
 
 import { BoardCell } from 'components'
 
-const propTypes = {}
+const propTypes = {
+  gameField: PropTypes.array.isRequired,
+  updateBoard: PropTypes.func.isRequired,
+  currentSymbol: PropTypes.string.isRequired,
+  publishAction: PropTypes.func.isRequired,
+  winner: PropTypes.string.isRequired
+}
 const defaultProps = {}
 
 const BoardBox = styled.div`
@@ -45,10 +51,14 @@ const Button = styled.button`
   font-size: 1.5em;
   border-radius: 3em;
   cursor: pointer;
+  outline: none;
 `
 
 const Board = (props) => {
   const { gameField, updateBoard, currentSymbol, publishAction, winner } = props
+
+  // show winner screen if the winner is present
+  // Can make this as a new component later
   if (winner) {
     return (
       <WinnerBox>
@@ -57,6 +67,8 @@ const Board = (props) => {
       </WinnerBox>
     )
   }
+
+  // show the game screen if winner is not declared yet
   return (
     <BoardBox>
       {gameField.map((value) => {
