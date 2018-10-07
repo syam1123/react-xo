@@ -132,7 +132,7 @@ class BoardContainer extends Component {
     return(
       <BoardSection>
         <Heading>XO - XO</Heading>
-        <SubHeading>Hey! come and place realtime XO game</SubHeading>
+      <SubHeading>Hey! come and play realtime XO game</SubHeading>
         <Board
           currentSymbol={this.currentSymbol()}
           updateBoard={this.updateBoard}

@@ -31,10 +31,13 @@ module.exports = {
       },
       {
         test: /\.js?$/,
-        use: [
-          'babel-loader',
-        ],
         exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          query  :{
+            presets:['react', 'es2015', 'stage-0']
+          }
+        }
       },
       {
         test: /\.(eot|svg|ttf|otf|woff|woff2)$/,
