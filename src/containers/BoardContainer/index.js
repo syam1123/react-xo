@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import styled from 'styled-components'
 import PropTypes from 'prop-types'
+import PubNubReact from 'pubnub-react';
 
 import { Heading, SubHeading, Board } from 'components'
 
@@ -18,15 +19,49 @@ class BoardContainer extends Component {
       winner: null,
       isX: true,
       winningNumbers: [7, 56, 448, 73, 146, 292, 273, 84],
-      gameField : null
+      gameField : null,
+      playedCells: {}
     };
     this.moves = 0;
     this.playerX = 0;
     this.playerO = 0;
+    this.pubnub = new PubNubReact({ publishKey: 'pub-c-7e22a6d7-89cf-4fdb-9af8-4c331b5922c0', subscribeKey: 'sub-c-86637cb6-c9f2-11e8-9ca5-92bdce849b25' });
+    this.pubnub.init(this);
   }
 
   componentWillMount() {
     this.setState({gameField: this.getInitialGameField()})
+    this.pubnub.subscribe({ channels: ['channel1'], withPresence: true });
+
+    this.pubnub.getMessage('channel1', (message) => {
+      this.reviewPubNubMessage(message)
+    });
+  }
+
+  componentWillUnmount() {
+    this.pubnub.unsubscribe({ channels: ['channel1'] });
+  }
+
+  reviewPubNubMessage = (action) => {
+    const { cellValue, isReset } = action.message;
+    if (isReset) {
+      this.resetBoard()
+      return
+    }
+    this.updateBoard(cellValue)
+  }
+
+  publishAction = (cell, isReset = false) => {
+    let action = {
+      channel: 'channel1',
+      message: {
+        cellValue: cell,
+        isReset: isReset
+      }
+    }
+    this.pubnub.publish(action, (response) => {
+      console.log("response", response);
+    });
   }
 
   getInitialGameField () {
@@ -59,7 +94,6 @@ class BoardContainer extends Component {
     const { winningNumbers } = this.state
     for (j = 0, len = winningNumbers.length; j < len; j++) {
       number = winningNumbers[j];
-      console.log("number", number, this.currentPlayer());
       if ((number & this.currentPlayer()) === number) {
         this.setState({winner: `Player ${this.currentSymbol().toUpperCase()}`})
       }
@@ -74,19 +108,21 @@ class BoardContainer extends Component {
   }
 
   updateBoard = (cellValue) => {
-    console.log("cellValue",cellValue);
     if (this.state.isX) {
       this.playerX += cellValue;
     } else {
       this.playerO += cellValue;
     }
     this.moves++;
+    let { playedCells } = this.state;
+    if (!playedCells[cellValue]) playedCells[cellValue] = this.currentSymbol()
+    this.setState({playedCells: playedCells})
     this.checkWinConditions();
     this.updateCurrentSymbol();
   }
 
   resetBoard = () => {
-    this.setState({isX: true, winner: null})
+    this.setState({isX: true, winner: null, playedCells: []})
     this.playerX = 0;
     this.playerO = 0;
     this.moves = 0;
@@ -104,6 +140,8 @@ class BoardContainer extends Component {
           gameField={this.state.gameField}
           winner={this.state.winner}
           resetBoard={this.resetBoard}
+          publishAction={this.publishAction}
+          playedCells={this.state.playedCells}
         />
       </BoardSection>
     );

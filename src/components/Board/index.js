@@ -48,13 +48,12 @@ const Button = styled.button`
 `
 
 const Board = (props) => {
-  console.log("props", props);
-  const { gameField, updateBoard, currentSymbol, resetBoard, winner } = props
+  const { gameField, updateBoard, currentSymbol, publishAction, winner } = props
   if (winner) {
     return (
       <WinnerBox>
         <WinnerName><b>{winner}</b> won the game</WinnerName>
-        <Button onClick={resetBoard}>Play again</Button>
+        <Button onClick={() =>publishAction(null, true)}>Play again</Button>
       </WinnerBox>
     )
   }
