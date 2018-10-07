@@ -1,6 +1,7 @@
 # Profile
 
 This is a sample XO game developed using reactJs and pubNub for real time updates
+The [live demo](https://online-react-xo.firebaseapp.com/) is here
 
 ## Methods to run
 
